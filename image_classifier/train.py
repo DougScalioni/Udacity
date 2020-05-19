@@ -23,7 +23,7 @@ parser.add_argument('--learning_rate', '-l',
 
 parser.add_argument('--hidden_units', '-H',
                     action='store',
-                    default=[512, 256],
+                    default=[4096, 1024],
                     dest='hidden_units',
                     nargs='*'
                     )
