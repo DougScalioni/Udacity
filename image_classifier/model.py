@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch import optim
-from torchvision import datasets, transforms, models
+from torchvision import models
 
 
 def get_model(arch):
@@ -20,20 +20,21 @@ def get_model(arch):
 
 class Network:
 
-    def __init__(self, arch='vgg16', hidden_units=[4096, 1024], learn_rate=0.003, n_outputs=102, dropout=0.25):
-        self.model = get_model(arch)
-        print('Pre-trained model', arch, "loaded.")
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    def __init__(self, arch='vgg16', hidden_units=[4096, 1024], learn_rate=0.003, outputs=102, dropout=0.25, gpu=False):
+        self.architecture = arch
+        self.model = get_model(self.architecture)
+        print('Pre-trained model', self.architecture, "loaded.")
+        self.device = torch.device("cuda" if torch.cuda.is_available() and gpu else "cpu")
         self.hidden_units = hidden_units
-        self.n_classes = n_outputs
+        self.n_outputs = outputs
 
         for param in self.model.parameters():
             param.requires_grad = False
 
-        classifier_n_inputs = self.model.classifier[0].in_features
-        self.model.classifier = self.get_classifier(classifier_n_inputs, hidden_units, dropout)
+        self.classifier_n_inputs = self.model.classifier[0].in_features
+        self.model.classifier = self.get_classifier(self.classifier_n_inputs, hidden_units, dropout)
         print('Classifier adapted.')
-        print('With', classifier_n_inputs, 'inputs, hidden layers of', hidden_units, ',', n_outputs, 'outputs.')
+        print('With', self.classifier_n_inputs, 'inputs, hidden layers of', hidden_units, ',', outputs, 'outputs.')
         self.criterion = nn.NLLLoss()
         self.optimizer = optim.Adam(self.model.classifier.parameters(), learn_rate)
         print('Dropout ratio:', dropout)
@@ -45,7 +46,7 @@ class Network:
         layers = [n_inputs]
         for h in hidden_units:
             layers.append(h)
-        layers.append(self.n_classes)
+        layers.append(self.n_outputs)
         sequence = [nn.Linear(layers[0], layers[1])]
         for i in range(1, len(layers) - 1):
             sequence.append(nn.ReLU())

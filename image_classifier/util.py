@@ -1,7 +1,9 @@
 import torch
-from torch import nn
-from torch import optim
+import numpy as np
 from torchvision import datasets, transforms, models
+import json
+
+from model import Network
 
 
 def load_data(data_dir):
@@ -41,13 +43,60 @@ def load_data(data_dir):
     return trainloader, validloader, testloader
 
 
-def save_model(model, save_dir='', name='checkpoint.pth'):
+def save_model(net, save_dir='', name='checkpoint.pth'):
     if save_dir != '':
         save_dir += '/'
     path = save_dir + name
     check = {'input_size': 224,
-             'input_classifier': 25088,
-             'output_size': 102,
-             'state_dict': model.state_dict()}
-    print(check)
+             'hidden_units': net.hidden_units,
+             'input_classifier': net.classifier_n_inputs,
+             'output_size': net.n_outputs,
+             'arch': net.architecture,
+             'state_dict': net.model.state_dict()}
+    print("Model saved")
     torch.save(check, path)
+
+
+def load_model(path='checkpoint.pth'):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    load = torch.load(path, map_location=device)
+    arch = load['arch']
+    hidden_units = load['hidden_units']
+    parameters = load['state_dict']
+    net = Network(arch=arch, hidden_units=hidden_units)
+    net.model.load_state_dict(parameters)
+    return net
+
+
+def process_image(image):
+    image = image.resize(size=(256, 256))
+    image = crop_center(image, 224)
+    np_image = np.array(image)
+
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    np_image = (np_image / 255 - mean) / std
+
+    np_image = np_image.transpose(2, 0, 1)
+
+    tensor = torch.tensor([np_image])
+    return tensor
+
+
+def crop_center(image, dim):
+    width, height = image.size
+
+    left = (width - dim) / 2
+    top = (height - dim) / 2
+    right = (width + dim) / 2
+    bottom = (height + dim) / 2
+
+    image = image.crop((left, top, right, bottom))
+    return image
+
+
+with open('cat_to_name.json', 'r') as f:
+    cat_to_name = json.load(f)
+
+with open('correction.json', 'r') as c:
+    correct_index = json.load(c)

@@ -109,5 +109,5 @@ for e in range(epochs):
             net.model.train()
             running_loss = 0
 
-util.save_model(net.model, save_directory)
+util.save_model(net, save_directory)
 print('Model trained and saved in', save_directory)
