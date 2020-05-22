@@ -20,36 +20,38 @@ def get_model(arch):
 
 class Network:
 
-    def __init__(self, arch='vgg16', hidden_units=[15, 50]):
+    def __init__(self, arch='vgg16', hidden_units=[4096, 1024], learn_rate=0.003, n_outputs=102, dropout=0.25):
         self.model = get_model(arch)
+        print('Pre-trained model', arch, "loaded.")
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.hidden_units = hidden_units
-        self.n_classes = 102
+        self.n_classes = n_outputs
 
         for param in self.model.parameters():
             param.requires_grad = False
 
         classifier_n_inputs = self.model.classifier[0].in_features
-        self.model.classifier = self.get_classifier(classifier_n_inputs, hidden_units)
+        self.model.classifier = self.get_classifier(classifier_n_inputs, hidden_units, dropout)
+        print('Classifier adapted.')
+        print('With', classifier_n_inputs, 'inputs, hidden layers of', hidden_units, ',', n_outputs, 'outputs.')
         self.criterion = nn.NLLLoss()
-        self.optimizer = optim.Adam(model.classifier.parameters(), lr=0.003)
+        self.optimizer = optim.Adam(self.model.classifier.parameters(), learn_rate)
+        print('Dropout ratio:', dropout)
+        print('Learning rate:', learn_rate)
         self.model.to(device=self.device)
+        print('Device:', self.device)
 
-    def get_classifier(self, n_inputs, hidden_units):
+    def get_classifier(self, n_inputs, hidden_units, dropout):
         layers = [n_inputs]
         for h in hidden_units:
-            layers.append[h]
+            layers.append(h)
         layers.append(self.n_classes)
         sequence = [nn.Linear(layers[0], layers[1])]
         for i in range(1, len(layers) - 1):
             sequence.append(nn.ReLU())
-            sequence.append(nn.Dropout(p=0.25))
+            sequence.append(nn.Dropout(p=dropout))
             sequence.append(nn.Linear(layers[i], layers[i + 1]))
         sequence.append(nn.LogSoftmax(dim=1))
         classifier = nn.Sequential(*sequence)
+
         return classifier
-    
-
-model = get_model('vgg16')
-
-print(model.classifier[0].in_features)
