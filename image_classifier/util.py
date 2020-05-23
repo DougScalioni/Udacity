@@ -51,17 +51,18 @@ def save_model(net, save_dir='', name='checkpoint.pth'):
              'output_size': net.n_outputs,
              'arch': net.architecture,
              'state_dict': net.model.state_dict()}
-    print("Model saved")
+
     torch.save(check, path)
 
 
 def load_model(path='checkpoint.pth'):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    load = torch.load(path, map_location=device)
+    load = torch.load(path, map_location=lambda storage, loc: storage)
     arch = load['arch']
     hidden_units = load['hidden_units']
     parameters = load['state_dict']
     net = Network(arch=arch, hidden_units=hidden_units)
+    net.model.to(device)
     net.model.load_state_dict(parameters)
     return net
 
@@ -91,6 +92,3 @@ def crop_center(image, dim):
 
     image = image.crop((left, top, right, bottom))
     return image
-
-
-

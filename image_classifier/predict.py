@@ -71,7 +71,7 @@ index = []
 probabilities = []
 for i in range(len(top_class[0])):
     ind = str(top_class[0][i].item())
-    ind = util.correct_index[ind]
+    ind = correct_index[ind]
     index.append(str(ind))
 
 for j in range(len(top_p[0])):
@@ -80,7 +80,7 @@ for j in range(len(top_p[0])):
 
 labels = []
 for ind in index:
-    labels.append(util.cat_to_name[ind])
+    labels.append(cat_to_name[ind])
 
 for i in range(top_k):
     print(index[i], '-', labels[i], '-', probabilities[i])

@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-from torch import optim
 from torchvision import models
 
 
@@ -20,7 +19,7 @@ def get_model(arch):
 
 class Network:
 
-    def __init__(self, arch='vgg16', hidden_units=[4096, 1024], learn_rate=0.003, outputs=102, dropout=0.25, gpu=False):
+    def __init__(self, arch='vgg16', hidden_units=[4096, 1024], outputs=102, dropout=0.25, gpu=False):
         self.architecture = arch
         self.model = get_model(self.architecture)
         print('Pre-trained model', self.architecture, "loaded.")
@@ -35,8 +34,6 @@ class Network:
         self.model.classifier = self.get_classifier(self.classifier_n_inputs, hidden_units, dropout)
         print('Classifier adapted.')
         print('With', self.classifier_n_inputs, 'inputs, hidden layers of', hidden_units, ',', outputs, 'outputs.')
-        self.criterion = nn.NLLLoss()
-        self.optimizer = optim.Adam(self.model.classifier.parameters(), learn_rate)
         self.model.to(device=self.device)
 
     def get_classifier(self, n_inputs, hidden_units, dropout):
@@ -52,9 +49,3 @@ class Network:
         sequence.append(nn.LogSoftmax(dim=1))
         classifier = nn.Sequential(*sequence)
         return classifier
-
-
-
-
-
-
