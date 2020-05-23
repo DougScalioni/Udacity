@@ -1,6 +1,7 @@
 import argparse
 import torch
 import util
+from datetime import datetime
 from model import Network
 
 parser = argparse.ArgumentParser()
@@ -10,6 +11,7 @@ parser.add_argument('data_directory', action="store", type=str)
 parser.add_argument('--save_dir', '-s',
                     action='store',
                     dest='save_dir',
+                    default='model_checkpoints',
                     type=str)
 
 parser.add_argument('--arch', '-a',
@@ -111,5 +113,8 @@ for e in range(epochs):
             net.model.train()
             running_loss = 0
 
-util.save_model(net, save_directory)
+now = datetime.now()
+datetime = now.strftime("%m-%d-%Y-%H-%M-%S")
+name = datetime + '.pth'
+util.save_model(net, save_directory, name)
 print('Model trained and saved in', save_directory)

@@ -1,8 +1,6 @@
 import torch
 import numpy as np
 from torchvision import datasets, transforms
-import json
-
 from model import Network
 
 
@@ -95,8 +93,4 @@ def crop_center(image, dim):
     return image
 
 
-with open('cat_to_name.json', 'r') as f:
-    cat_to_name = json.load(f)
 
-with open('correction.json', 'r') as c:
-    correct_index = json.load(c)

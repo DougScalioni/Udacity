@@ -52,3 +52,9 @@ class Network:
         sequence.append(nn.LogSoftmax(dim=1))
         classifier = nn.Sequential(*sequence)
         return classifier
+
+
+
+
+
+

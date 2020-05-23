@@ -2,6 +2,8 @@ import argparse
 from PIL import Image
 import torch
 import util
+import json
+
 
 parser = argparse.ArgumentParser()
 
@@ -45,6 +47,12 @@ category_names = results.category_names
 # Use GPU for inference:
 gpu_enabled = results.gpu
 
+with open('correction.json', 'r') as c:
+    correct_index = json.load(c)
+
+with open(category_names, 'r') as f:
+    cat_to_name = json.load(f)
+
 
 # Prediction
 net = util.load_model(checkpoint)
@@ -76,4 +84,3 @@ for ind in index:
 
 for i in range(top_k):
     print(index[i], '-', labels[i], '-', probabilities[i])
-
