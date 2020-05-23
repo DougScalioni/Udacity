@@ -37,10 +37,7 @@ class Network:
         print('With', self.classifier_n_inputs, 'inputs, hidden layers of', hidden_units, ',', outputs, 'outputs.')
         self.criterion = nn.NLLLoss()
         self.optimizer = optim.Adam(self.model.classifier.parameters(), learn_rate)
-        print('Dropout ratio:', dropout)
-        print('Learning rate:', learn_rate)
         self.model.to(device=self.device)
-        print('Device:', self.device)
 
     def get_classifier(self, n_inputs, hidden_units, dropout):
         layers = [n_inputs]
@@ -54,5 +51,4 @@ class Network:
             sequence.append(nn.Linear(layers[i], layers[i + 1]))
         sequence.append(nn.LogSoftmax(dim=1))
         classifier = nn.Sequential(*sequence)
-
         return classifier

@@ -65,9 +65,11 @@ print_every = 10  # validate every 'print_every' training batches
 gpu_enabled = results.gpu
 
 
+# Training
 trainloader, validloader, testloader = util.load_data(data_directory)
 net = Network(architecture, hidden_units, learn_rate, n_classes, dropout)
-print('Training with', epochs, 'epochs.')
+print('Training for', epochs, 'epochs.')
+print("Dropout:", dropout, "Learning rate:", learn_rate)
 
 for e in range(epochs):
     steps = 0

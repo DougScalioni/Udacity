@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from torchvision import datasets, transforms, models
+from torchvision import datasets, transforms
 import json
 
 from model import Network

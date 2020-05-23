@@ -1,18 +1,16 @@
 import argparse
 from PIL import Image
 import torch
-
 import util
-
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('image', action="store",
-                    dest='image',
+parser.add_argument('image',
+                    action="store",
                     type=str)
 
-parser.add_argument('checkpoint', action="store",
-                    dest='checkpoint',
+parser.add_argument('checkpoint',
+                    action="store",
                     type=str)
 
 parser.add_argument('--top_k', '-k',
@@ -33,7 +31,7 @@ parser.add_argument('--gpu', '-g',
                     default=False)
 
 results = parser.parse_args()
-
+print(results)
 # Inputs:
 image = results.image
 checkpoint = results.checkpoint
@@ -47,8 +45,9 @@ category_names = results.category_names
 # Use GPU for inference:
 gpu_enabled = results.gpu
 
-net = util.load_model(checkpoint)
 
+# Prediction
+net = util.load_model(checkpoint)
 device = torch.device("cuda" if torch.cuda.is_available() and gpu_enabled else "cpu")
 
 im = Image.open(image)
@@ -64,12 +63,12 @@ index = []
 probabilities = []
 for i in range(len(top_class[0])):
     ind = str(top_class[0][i].item())
-    index.append(util.correct_index[ind])
+    ind = util.correct_index[ind]
+    index.append(str(ind))
 
 for j in range(len(top_p[0])):
     prob = top_p[0][j].item()
     probabilities.append(prob)
-
 
 labels = []
 for ind in index:
